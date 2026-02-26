@@ -1,0 +1,271 @@
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+html {
+  scroll-behavior: auto;
+}
+
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+body {
+  margin: 0;
+  font-family: "IBM Plex Sans", system-ui, sans-serif;
+  background: #000;
+}
+
+.segment-line {
+  max-width: 72ch;
+}
+
+.segment-text {
+  will-change: transform, opacity;
+}
+
+@keyframes cosmicTwinkle {
+  0%,
+  100% {
+    opacity: 0.14;
+    transform: scale(0.92);
+  }
+  50% {
+    opacity: 0.55;
+    transform: scale(1.15);
+  }
+}
+
+@keyframes cosmicStreak {
+  0% {
+    transform: translate3d(-12vw, -5vh, 0) scaleX(0.92);
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  55% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate3d(18vw, 10vh, 0) scaleX(1.08);
+    opacity: 0;
+  }
+}
+
+@keyframes cosmicOrbFloatA {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(2vw, -1.8vh, 0) scale(1.05);
+  }
+  100% {
+    transform: translate3d(-1vw, 1.6vh, 0) scale(1.02);
+  }
+}
+
+@keyframes cosmicOrbFloatB {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1.03);
+  }
+  50% {
+    transform: translate3d(-2.2vw, 1.4vh, 0) scale(0.98);
+  }
+  100% {
+    transform: translate3d(1.2vw, -1.2vh, 0) scale(1.04);
+  }
+}
+
+@keyframes cosmicNebulaPulse {
+  0%,
+  100% {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+
+@keyframes ringSpinSlow {
+  from {
+    rotate: 0deg;
+  }
+  to {
+    rotate: 360deg;
+  }
+}
+
+@keyframes bgDriftForward {
+  0% {
+    transform: translate3d(-1.5%, -1%, 0) scale(1.01);
+  }
+  50% {
+    transform: translate3d(1%, 1.4%, 0) scale(1.03);
+  }
+  100% {
+    transform: translate3d(2%, -1.2%, 0) scale(1.015);
+  }
+}
+
+@keyframes bgDriftReverse {
+  0% {
+    transform: translate3d(1.4%, 1.1%, 0) scale(1.02);
+  }
+  50% {
+    transform: translate3d(-1.8%, -1.5%, 0) scale(1.005);
+  }
+  100% {
+    transform: translate3d(-1.1%, 1.2%, 0) scale(1.025);
+  }
+}
+
+@keyframes bgZoomPulse {
+  0% {
+    transform: scale(1.01);
+  }
+  50% {
+    transform: scale(1.045);
+  }
+  100% {
+    transform: scale(1.015);
+  }
+}
+
+.bg-drift-forward {
+  animation: bgDriftForward 34s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.bg-drift-reverse {
+  animation: bgDriftReverse 42s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.bg-zoom-pulse {
+  animation: bgZoomPulse 18s ease-in-out infinite;
+}
+
+.cosmic-star {
+  animation: cosmicTwinkle ease-in-out infinite;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.12);
+}
+
+.cosmic-streak {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.9) 40%,
+    rgba(148, 197, 255, 0.4) 70%,
+    transparent 100%
+  );
+  filter: blur(0.15px);
+  transform-origin: left center;
+  animation: cosmicStreak linear infinite;
+}
+
+.cosmic-streak::after {
+  content: "";
+  position: absolute;
+  right: 22%;
+  top: 50%;
+  width: 8px;
+  height: 2px;
+  border-radius: 999px;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 0 12px rgba(255, 255, 255, 0.35);
+}
+
+.cosmic-orb-a {
+  animation: cosmicOrbFloatA 22s ease-in-out infinite alternate;
+}
+
+.cosmic-orb-b {
+  animation: cosmicOrbFloatB 28s ease-in-out infinite alternate;
+}
+
+.cosmic-nebula {
+  animation: cosmicNebulaPulse 16s ease-in-out infinite;
+}
+
+.cosmic-ring {
+  filter: none;
+}
+
+.cosmic-ring-global-a {
+  animation: ringSpinSlow 140s linear infinite;
+}
+
+.cosmic-ring-global-b {
+  animation: ringSpinSlow 190s linear infinite reverse;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+}
+
+@layer utilities {
+  .grid-pattern {
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+    background-size: 36px 36px;
+    mask-image: radial-gradient(circle at center, black 45%, transparent 100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .bg-drift-forward,
+  .bg-drift-reverse,
+  .bg-zoom-pulse {
+    animation: none !important;
+  }
+
+  .cosmic-star,
+  .cosmic-streak,
+  .cosmic-orb-a,
+  .cosmic-orb-b,
+  .cosmic-nebula,
+  .cosmic-ring-global-a,
+  .cosmic-ring-global-b {
+    animation: none !important;
+  }
+}
