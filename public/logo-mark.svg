@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="g1" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(152 136) rotate(41.5) scale(434 356)">
+      <stop stop-color="#4F46E5"/>
+      <stop offset="0.45" stop-color="#0EA5E9"/>
+      <stop offset="1" stop-color="#020617"/>
+    </radialGradient>
+    <radialGradient id="g2" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(384 400) rotate(-145) scale(260 220)">
+      <stop stop-color="#22D3EE" stop-opacity="0.7"/>
+      <stop offset="1" stop-color="#22D3EE" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="#010101"/>
+  <rect width="512" height="512" rx="112" fill="url(#g1)"/>
+  <rect width="512" height="512" rx="112" fill="url(#g2)"/>
+
+  <circle cx="256" cy="256" r="150" stroke="rgba(255,255,255,0.14)" stroke-width="2"/>
+  <circle cx="256" cy="256" r="108" stroke="rgba(255,255,255,0.18)" stroke-width="2"/>
+  <circle cx="256" cy="256" r="62" stroke="rgba(255,255,255,0.28)" stroke-width="2"/>
+
+  <path d="M144 304C174 272 210 256 256 256C302 256 338 272 368 304" stroke="white" stroke-opacity="0.75" stroke-width="14" stroke-linecap="round"/>
+  <path d="M180 218C200 194 224 180 256 180C288 180 312 194 332 218" stroke="white" stroke-opacity="0.88" stroke-width="12" stroke-linecap="round"/>
+  <circle cx="256" cy="256" r="16" fill="white"/>
+
+  <circle cx="120" cy="164" r="3" fill="white" fill-opacity="0.85"/>
+  <circle cx="400" cy="124" r="2.5" fill="white" fill-opacity="0.75"/>
+  <circle cx="394" cy="366" r="2" fill="white" fill-opacity="0.65"/>
+  <circle cx="108" cy="344" r="2.5" fill="white" fill-opacity="0.7"/>
+</svg>

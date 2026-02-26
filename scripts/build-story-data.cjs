@@ -9,6 +9,11 @@ const INPUT_FILE = path.join(
 );
 const OUTPUT_FILE = path.join(ROOT, "src", "data", "immortalStory.json");
 const EXCLUDED_SEGMENT_INDEXES = new Set([12, 13, 14]);
+const TEXT_CORRECTIONS = [
+  [/letritos/gi, "detritos"],
+  [/\bUm Google de anos\b/g, "Um googol de anos"],
+  [/se valor apenas é imortal/gi, "se vale apenas ser imortal"],
+];
 
 const CHAPTERS = [
   {
@@ -208,7 +213,10 @@ function parseTranscript(rawText) {
 
   while ((match = regex.exec(normalized))) {
     const [, start, end, content] = match;
-    const text = content.trim().replace(/\n+/g, " ").replace(/\s{2,}/g, " ");
+    let text = content.trim().replace(/\n+/g, " ").replace(/\s{2,}/g, " ");
+    for (const [pattern, replacement] of TEXT_CORRECTIONS) {
+      text = text.replace(pattern, replacement);
+    }
     segments.push({
       start,
       end,

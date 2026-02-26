@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bgA" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(250 160) rotate(35) scale(800 520)">
+      <stop stop-color="#312E81"/>
+      <stop offset="0.45" stop-color="#0EA5E9"/>
+      <stop offset="1" stop-color="#020617"/>
+    </radialGradient>
+    <radialGradient id="bgB" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(980 510) rotate(-155) scale(500 280)">
+      <stop stop-color="#22D3EE" stop-opacity="0.58"/>
+      <stop offset="1" stop-color="#22D3EE" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="txt" x1="120" y1="180" x2="1080" y2="470" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#E0F2FE"/>
+      <stop offset="1" stop-color="#FFFFFF"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="#000"/>
+  <rect width="1200" height="630" fill="url(#bgA)"/>
+  <rect width="1200" height="630" fill="url(#bgB)"/>
+  <g opacity="0.12">
+    <circle cx="900" cy="170" r="150" stroke="white" stroke-width="2"/>
+    <circle cx="900" cy="170" r="110" stroke="white" stroke-width="2"/>
+    <circle cx="900" cy="170" r="70" stroke="white" stroke-width="2"/>
+    <circle cx="220" cy="500" r="190" stroke="white" stroke-width="2"/>
+  </g>
+  <g opacity="0.8">
+    <circle cx="170" cy="126" r="2.3" fill="white"/>
+    <circle cx="1080" cy="90" r="1.8" fill="white"/>
+    <circle cx="1020" cy="266" r="2" fill="white"/>
+    <circle cx="140" cy="566" r="1.6" fill="white"/>
+  </g>
+  <text x="90" y="220" fill="rgba(255,255,255,0.6)" font-size="20" font-weight="600" font-family="Sora, Arial, sans-serif" letter-spacing="4">SCROLL STORY EXPERIENCE</text>
+  <text x="90" y="320" fill="url(#txt)" font-size="68" font-weight="700" font-family="Sora, Arial, sans-serif" letter-spacing="-2">A história de um ser</text>
+  <text x="90" y="400" fill="url(#txt)" font-size="68" font-weight="700" font-family="Sora, Arial, sans-serif" letter-spacing="-2">humano imortal.</text>
+  <text x="90" y="488" fill="rgba(255,255,255,0.72)" font-size="30" font-weight="500" font-family="Sora, Arial, sans-serif">Venceu a morte. Descobriu algo pior do que ela.</text>
+  <rect x="90" y="536" width="380" height="2" fill="rgba(255,255,255,0.22)"/>
+</svg>

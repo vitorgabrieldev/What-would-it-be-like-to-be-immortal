@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Sora:wght@400;500;600;700&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -38,11 +38,46 @@ body {
 }
 
 .segment-line {
-  max-width: 72ch;
+  width: 100%;
+  display: flex;
+}
+
+.segment-line-left {
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.segment-line-center {
+  justify-content: center;
+  text-align: center;
+}
+
+.segment-line-right {
+  justify-content: flex-end;
+  text-align: right;
+}
+
+.segment-burst {
+  width: min(100%, 34ch);
+  font-family: "Sora", "IBM Plex Sans", system-ui, sans-serif;
+  font-size: clamp(1.12rem, 0.92rem + 1.15vw, 2.15rem);
+  font-weight: 500;
+  line-height: 1.36;
+  letter-spacing: -0.02em;
+  text-wrap: pretty;
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.25);
 }
 
 .segment-text {
   will-change: transform, opacity;
+}
+
+@media (max-width: 640px) {
+  .segment-burst {
+    width: min(100%, 24ch);
+    font-size: clamp(1rem, 0.92rem + 1vw, 1.52rem);
+    line-height: 1.38;
+  }
 }
 
 @keyframes cosmicTwinkle {

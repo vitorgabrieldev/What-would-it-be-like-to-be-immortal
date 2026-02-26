@@ -3,7 +3,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "@studio-freight/lenis";
 import storyData from "./data/immortalStory.json";
-import backgroundMusic from "./data/background.mp3";
+import backgroundMusic from "./data/background.optimized.mp3";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -81,11 +81,156 @@ function smoothPulse(value) {
   return x * x * (3 - 2 * x);
 }
 
-function CosmicAmbient({ progress, activePalette }) {
-  const orbitShift = (progress - 0.5) * 120;
+function hashString(input) {
+  let hash = 2166136261;
+  for (let index = 0; index < input.length; index += 1) {
+    hash ^= input.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return hash >>> 0;
+}
+
+function getSegmentPlacement(segment) {
+  const hash = hashString(segment.id ?? String(segment.index ?? ""));
+  return hash % 2 === 0 ? "left" : "right";
+}
+
+function getEmptinessFactor(activeChapterIndex) {
+  const start = Math.max(0, chaptersWithSegments.length - 4);
+  if (activeChapterIndex < start) return 0;
+  return clamp01((activeChapterIndex - start + 1) / 4);
+}
+
+function useViewportFlags() {
+  const [flags, setFlags] = useState(() => ({
+    isMobile: false,
+    reducedMotion: false,
+  }));
+
+  useEffect(() => {
+    const mobileQuery = window.matchMedia("(max-width: 768px)");
+    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    const update = () => {
+      setFlags({
+        isMobile: mobileQuery.matches,
+        reducedMotion: motionQuery.matches,
+      });
+    };
+
+    update();
+    mobileQuery.addEventListener?.("change", update);
+    motionQuery.addEventListener?.("change", update);
+
+    return () => {
+      mobileQuery.removeEventListener?.("change", update);
+      motionQuery.removeEventListener?.("change", update);
+    };
+  }, []);
+
+  return flags;
+}
+
+function StarDustParticles({ activePalette, enabled }) {
+  const [ParticlesComponent, setParticlesComponent] = useState(null);
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    if (!enabled) return undefined;
+    let mounted = true;
+
+    (async () => {
+      const [{ default: Particles, initParticlesEngine }, { loadSlim }] = await Promise.all([
+        import("@tsparticles/react"),
+        import("@tsparticles/slim"),
+      ]);
+
+      if (!mounted) return;
+      setParticlesComponent(() => Particles);
+
+      await initParticlesEngine(async (engine) => {
+        await loadSlim(engine);
+      });
+
+      if (mounted) setReady(true);
+    })();
+
+    return () => {
+      mounted = false;
+    };
+  }, [enabled]);
+
+  if (!enabled || !ready || !ParticlesComponent) {
+    return null;
+  }
 
   return (
-    <div className="pointer-events-none fixed inset-0 z-[1] overflow-hidden">
+    <ParticlesComponent
+      id="star-dust"
+      className="pointer-events-none fixed inset-0 z-[2] opacity-60"
+      options={{
+        fullScreen: { enable: false },
+        fpsLimit: 40,
+        detectRetina: false,
+        background: { color: { value: "transparent" } },
+        particles: {
+          number: {
+            value: 18,
+            density: { enable: true, area: 1200 },
+          },
+          color: {
+            value: [activePalette.accent, activePalette.to, "#ffffff"],
+          },
+          shape: { type: "circle" },
+          opacity: {
+            value: { min: 0.03, max: 0.16 },
+            animation: {
+              enable: true,
+              speed: 0.35,
+              minimumValue: 0.02,
+              sync: false,
+            },
+          },
+          size: {
+            value: { min: 0.6, max: 2.2 },
+            animation: {
+              enable: true,
+              speed: 1.1,
+              minimumValue: 0.3,
+              sync: false,
+            },
+          },
+          move: {
+            enable: true,
+            speed: { min: 0.08, max: 0.35 },
+            random: true,
+            outModes: { default: "out" },
+            direction: "none",
+          },
+          links: { enable: false },
+        },
+        interactivity: {
+          detectsOn: "window",
+          events: {
+            onHover: { enable: false },
+            onClick: { enable: false },
+            resize: true,
+          },
+        },
+      }}
+    />
+  );
+}
+
+function CosmicAmbient({ progress, activePalette, isMobile, emptiness }) {
+  const orbitShift = (progress - 0.5) * 120;
+  const fade = 1 - emptiness * 0.72;
+
+  return (
+    <div
+      className="pointer-events-none fixed inset-0 z-[1] overflow-hidden transition-opacity duration-700"
+      style={{ opacity: isMobile ? 0.7 * fade : fade }}
+    >
       <div
         className="absolute left-[-12vw] top-[6vh] h-[42vh] w-[42vh]"
         style={{
@@ -144,29 +289,32 @@ function CosmicAmbient({ progress, activePalette }) {
         ))}
       </div>
 
-      <div className="absolute inset-0">
-        {cosmicStreaks.map((streak) => (
-          <span
-            key={streak.id}
-            className="cosmic-streak absolute block"
-            style={{
-              top: `${streak.top}%`,
-              left: `${streak.left}%`,
-              width: `${streak.width}px`,
-              opacity: streak.opacity,
-              transform: `rotate(${streak.angle}deg)`,
-              animationDelay: `${streak.delay}s`,
-              animationDuration: `${streak.duration}s`,
-            }}
-          />
-        ))}
-      </div>
+      {!isMobile ? (
+        <div className="absolute inset-0">
+          {cosmicStreaks.map((streak) => (
+            <span
+              key={streak.id}
+              className="cosmic-streak absolute block"
+              style={{
+                top: `${streak.top}%`,
+                left: `${streak.left}%`,
+                width: `${streak.width}px`,
+                opacity: streak.opacity * fade,
+                transform: `rotate(${streak.angle}deg)`,
+                animationDelay: `${streak.delay}s`,
+                animationDuration: `${streak.duration}s`,
+              }}
+            />
+          ))}
+        </div>
+      ) : null}
 
       <div
         className="cosmic-ring cosmic-ring-global-a absolute left-1/2 top-1/2 h-[62vw] w-[62vw] -translate-x-1/2 -translate-y-1/2 rounded-full border"
         style={{
           borderColor: `${activePalette.accent}14`,
           transform: `translate(-50%, -50%) rotate(${progress * 80}deg)`,
+          opacity: isMobile ? 0.4 * fade : fade,
         }}
       />
       <div
@@ -174,19 +322,24 @@ function CosmicAmbient({ progress, activePalette }) {
         style={{
           borderColor: `${activePalette.to}12`,
           transform: `translate(-50%, -50%) rotate(${-progress * 56}deg)`,
+          opacity: isMobile ? 0.28 * fade : 0.7 * fade,
         }}
       />
     </div>
   );
 }
 
-function BackgroundLayerStack({ progress, activePalette }) {
+function BackgroundLayerStack({ progress, activePalette, isMobile, emptiness }) {
   const sceneCount = Math.max(1, backgroundScenes.length);
   const spacing = sceneCount > 1 ? 1 / (sceneCount - 1) : 1;
   const spread = spacing * 1.25;
+  const fade = 1 - emptiness * 0.8;
 
   return (
-    <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+    <div
+      className="pointer-events-none fixed inset-0 z-0 overflow-hidden transition-opacity duration-700"
+      style={{ opacity: fade }}
+    >
       <div
         className="absolute inset-0 transition-opacity duration-700"
         style={{
@@ -208,11 +361,12 @@ function BackgroundLayerStack({ progress, activePalette }) {
         const local = (progress - center) / spread;
         const baseX = ((scene.motionSeed % 5) - 2) * 5;
         const baseY = ((scene.motionSeed % 7) - 3) * 4;
-        const panX = baseX + local * -24;
-        const panY = baseY + local * 14;
-        const scale = scene.kind === "image" ? 1.08 + strength * 0.08 : 1.02 + strength * 0.05;
+        const panX = baseX + local * (isMobile ? -14 : -24);
+        const panY = baseY + local * (isMobile ? 8 : 14);
+        const scale = scene.kind === "image" ? 1.05 + strength * 0.06 : 1.02 + strength * 0.04;
         const rotate = scene.kind === "image" ? local * 2.2 : local * 1.2;
-        const opacity = strength * (scene.kind === "image" ? 0.23 : 0.18);
+        const opacity =
+          strength * (scene.kind === "image" ? (isMobile ? 0.16 : 0.23) : isMobile ? 0.12 : 0.18);
         const tintPalette = scene.palette ?? activePalette;
 
         return (
@@ -234,7 +388,7 @@ function BackgroundLayerStack({ progress, activePalette }) {
                   }}
                 >
                   <div
-                    className={`absolute inset-0 bg-cover bg-center bg-no-repeat ${sceneIndex % 2 ? "bg-drift-reverse" : "bg-drift-forward"} bg-zoom-pulse`}
+                    className={`absolute inset-0 bg-cover bg-center bg-no-repeat ${sceneIndex % 2 ? "bg-drift-reverse" : "bg-drift-forward"} ${isMobile ? "" : "bg-zoom-pulse"}`}
                     style={{
                       backgroundImage: `url(${scene.image.src})`,
                       opacity: 0.9,
@@ -350,10 +504,14 @@ function ChapterScene({ chapter, index }) {
 }
 
 function SegmentParagraph({ segment }) {
+  const placement = getSegmentPlacement(segment);
+
   return (
-    <p className="segment-line py-1.5 leading-relaxed text-white/90">
-      <span className="segment-text block text-[15px] sm:text-base">{segment.text}</span>
-    </p>
+    <div className={`segment-line segment-line-${placement} py-1.5`}>
+      <p className="segment-burst text-white/78">
+        <span className="segment-text block">{segment.text}</span>
+      </p>
+    </div>
   );
 }
 
@@ -362,13 +520,53 @@ function App() {
   const sectionRefs = useRef([]);
   const audioRef = useRef(null);
   const lenisRef = useRef(null);
+  const eraTransitionRef = useRef(null);
+  const loadingOverlayRef = useRef(null);
+  const [assetsReady, setAssetsReady] = useState(false);
   const [activeChapterIndex, setActiveChapterIndex] = useState(0);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const { isMobile, reducedMotion } = useViewportFlags();
 
   const activeChapter = chaptersWithSegments[activeChapterIndex] ?? chaptersWithSegments[0];
+  const emptiness = getEmptinessFactor(activeChapterIndex);
 
   useEffect(() => {
     sectionRefs.current = sectionRefs.current.slice(0, chaptersWithSegments.length);
+  }, []);
+
+  useEffect(() => {
+    let disposed = false;
+    const minDelay = new Promise((resolve) => window.setTimeout(resolve, 700));
+    const imagePreloads = backgroundImages.slice(0, Math.min(backgroundImages.length, 4)).map(
+      (item) =>
+        new Promise((resolve) => {
+          const img = new Image();
+          img.onload = () => resolve(true);
+          img.onerror = () => resolve(false);
+          img.src = item.src;
+        }),
+    );
+
+    const audio = audioRef.current;
+    const audioReadyPromise = new Promise((resolve) => {
+      if (!audio) return resolve(false);
+      const done = () => {
+        audio.removeEventListener("loadedmetadata", done);
+        audio.removeEventListener("canplay", done);
+        resolve(true);
+      };
+      audio.addEventListener("loadedmetadata", done, { once: true });
+      audio.addEventListener("canplay", done, { once: true });
+      window.setTimeout(done, 1200);
+    });
+
+    Promise.all([minDelay, audioReadyPromise, ...imagePreloads]).then(() => {
+      if (!disposed) setAssetsReady(true);
+    });
+
+    return () => {
+      disposed = true;
+    };
   }, []);
 
   useEffect(() => {
@@ -418,15 +616,14 @@ function App() {
   }, [scrollProgress]);
 
   useEffect(() => {
-    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (prefersReducedMotion) return undefined;
+    if (reducedMotion) return undefined;
 
     const lenis = new Lenis({
       smoothWheel: true,
       syncTouch: false,
-      wheelMultiplier: 0.55,
-      touchMultiplier: 0.8,
-      lerp: 0.06,
+      wheelMultiplier: isMobile ? 0.42 : 0.5,
+      touchMultiplier: isMobile ? 0.65 : 0.8,
+      lerp: isMobile ? 0.075 : 0.05,
       normalizeWheel: true,
       infinite: false,
     });
@@ -457,7 +654,41 @@ function App() {
       lenis.destroy();
       lenisRef.current = null;
     };
-  }, []);
+  }, [isMobile, reducedMotion]);
+
+  useEffect(() => {
+    if (!eraTransitionRef.current || reducedMotion) return;
+
+    gsap.killTweensOf(eraTransitionRef.current);
+    gsap.fromTo(
+      eraTransitionRef.current,
+      {
+        opacity: 0,
+        scale: 1.04,
+        rotate: activeChapterIndex % 2 === 0 ? -1 : 1,
+      },
+      {
+        opacity: 0.18,
+        scale: 1,
+        duration: 0.32,
+        ease: "power2.out",
+        yoyo: true,
+        repeat: 1,
+      },
+    );
+  }, [activeChapterIndex, reducedMotion]);
+
+  useEffect(() => {
+    if (!loadingOverlayRef.current) return;
+    if (!assetsReady) return;
+
+    gsap.to(loadingOverlayRef.current, {
+      opacity: 0,
+      duration: 0.65,
+      ease: "power2.out",
+      pointerEvents: "none",
+    });
+  }, [assetsReady]);
 
   useLayoutEffect(() => {
     if (!rootRef.current) return undefined;
@@ -520,7 +751,7 @@ function App() {
           );
         }
 
-        if (scene && orb) {
+        if (scene && orb && !isMobile) {
           gsap.to(orb, {
             scale: 1.08,
             rotate: index % 2 === 0 ? 45 : -45,
@@ -546,7 +777,7 @@ function App() {
           });
         }
 
-        if (rings.length) {
+        if (rings.length && !isMobile) {
           gsap.to(rings, {
             rotate: (_, target) => (target.classList.contains("scene-ring-b") ? -70 : 70),
             ease: "none",
@@ -590,7 +821,7 @@ function App() {
                 trigger: section,
                 start: "top 76%",
                 end: "top 24%",
-                scrub: 0.75,
+                scrub: isMobile ? 0.55 : 0.75,
               },
             },
           );
@@ -608,7 +839,7 @@ function App() {
     }, rootRef);
 
     return () => ctx.revert();
-  }, []);
+  }, [isMobile]);
 
   return (
     <div
@@ -620,17 +851,57 @@ function App() {
                      linear-gradient(180deg, ${activeChapter.palette.from}, #010101 42%, #000 100%)`,
       }}
     >
+      <div
+        ref={eraTransitionRef}
+        className="pointer-events-none fixed inset-0 z-[5] opacity-0"
+        style={{
+          background: `radial-gradient(circle at 50% 45%, ${activeChapter.palette.to}22 0%, transparent 58%),
+                       radial-gradient(circle at 20% 25%, ${activeChapter.palette.via}18 0%, transparent 55%),
+                       linear-gradient(180deg, transparent 0%, ${activeChapter.palette.from}20 100%)`,
+        }}
+      />
+
       <div className="pointer-events-none fixed inset-0 opacity-80">
-        <BackgroundLayerStack progress={scrollProgress} activePalette={activeChapter.palette} />
+        <BackgroundLayerStack
+          progress={scrollProgress}
+          activePalette={activeChapter.palette}
+          isMobile={isMobile}
+          emptiness={emptiness}
+        />
       </div>
 
-      <CosmicAmbient progress={scrollProgress} activePalette={activeChapter.palette} />
+      <CosmicAmbient
+        progress={scrollProgress}
+        activePalette={activeChapter.palette}
+        isMobile={isMobile}
+        emptiness={emptiness}
+      />
 
-      <div className="pointer-events-none fixed inset-0 opacity-[0.18]">
+      <StarDustParticles
+        activePalette={activeChapter.palette}
+        enabled={!isMobile && !reducedMotion && emptiness < 0.7}
+      />
+
+      <div
+        className="pointer-events-none fixed inset-0"
+        style={{ opacity: isMobile ? 0.12 : 0.18 - emptiness * 0.08 }}
+      >
         <div className="grid-pattern h-full w-full" />
       </div>
 
       <audio ref={audioRef} src={backgroundMusic} aria-hidden="true" />
+
+      <div
+        ref={loadingOverlayRef}
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black"
+      >
+        <div className="text-center">
+          <p className="text-xs uppercase tracking-[0.28em] text-white/45">Carregando</p>
+          <p className="mt-4 font-display text-2xl text-white/80 sm:text-3xl">
+            Ajustando o céu e o tempo...
+          </p>
+        </div>
+      </div>
 
       <div className="pointer-events-none fixed left-0 top-0 z-40 h-1 w-full bg-white/5">
         <div
@@ -641,25 +912,21 @@ function App() {
 
       <header
         data-hero
-        className="relative z-10 flex min-h-screen items-center px-4 py-20 sm:px-8 lg:px-12"
+        className="relative z-10 flex min-h-[90svh] items-center px-4 py-16 sm:px-8 sm:py-20 lg:min-h-screen lg:px-12"
       >
         <div
           data-hero-inner
-          className="mx-auto grid w-full max-w-7xl gap-8 rounded-3xl border border-white/10 bg-black/20 p-6 shadow-glow backdrop-blur md:grid-cols-[1.1fr_0.9fr] md:p-10"
+          className="mx-auto grid w-full max-w-7xl gap-8 rounded-3xl border border-white/10 bg-black/15 p-5 shadow-glow backdrop-blur md:grid-cols-[1.1fr_0.9fr] md:p-10"
         >
           <div>
-            <p className="text-xs uppercase tracking-[0.28em] text-white/60">
-              Scrollytelling • Leitura imersiva
-            </p>
-            <h1 className="mt-4 font-display text-4xl leading-tight text-white sm:text-5xl lg:text-6xl">
+            <h1 className="font-display text-4xl leading-tight text-white sm:text-5xl lg:text-6xl">
               A história de um ser humano imortal.
             </h1>
-            <p className="mt-5 max-w-2xl text-base leading-relaxed text-white/75 sm:text-lg">
-              Uma jornada em segunda pessoa que começa com liberdade absoluta e termina
-              no silêncio térmico do universo. Role para atravessar eras, perdas e o
-              último fóton.
+            <p className="mt-8 max-w-xl text-sm leading-relaxed text-white/58 sm:mt-9 sm:text-base lg:mt-10">
+              Acompanhe a vida de alguém que venceu a morte e descobriu algo muito pior
+              que ela.
             </p>
-            <div className="mt-8 flex flex-wrap gap-3 text-sm">
+            <div className="mt-8 flex flex-wrap gap-2.5 text-xs sm:text-sm">
               <span className="rounded-full border border-white/15 bg-white/5 px-4 py-2">
                 {storyData.stats.storySegments} segmentos de história
               </span>
@@ -672,7 +939,7 @@ function App() {
             </div>
           </div>
 
-          <div className="relative min-h-[320px]">
+          <div className="relative hidden min-h-[320px] md:block">
             <div className="absolute inset-0 rounded-3xl border border-white/10 bg-gradient-to-br from-white/5 to-white/[0.02]" />
             <div className="absolute inset-6 rounded-full border border-white/10" />
             <div className="absolute left-1/2 top-1/2 h-48 w-48 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/20">
@@ -693,17 +960,22 @@ function App() {
 
       <main className="relative z-10 pb-24">
         {chaptersWithSegments.map((chapter, index) => {
+          const chapterDepth = clamp01(index / Math.max(1, chaptersWithSegments.length - 1));
+          const chapterEmptiness = chapterDepth > 0.65 ? (chapterDepth - 0.65) / 0.35 : 0;
           return (
             <section
               key={chapter.id}
               ref={(element) => {
                 sectionRefs.current[index] = element;
               }}
-              className="chapter-step relative px-4 py-16 sm:px-8 sm:py-20 lg:px-12 lg:py-24"
+              className="chapter-step relative px-4 py-14 sm:px-8 sm:py-20 lg:px-12 lg:py-24"
             >
-              <div className="chapter-shell mx-auto grid w-full max-w-7xl items-start gap-8 lg:grid-cols-[0.7fr_1.3fr] lg:gap-12">
+              <div className="chapter-shell mx-auto grid w-full max-w-[92rem] items-start gap-8 lg:grid-cols-[0.62fr_1.38fr] lg:gap-14">
                 <div className="lg:sticky lg:top-6">
-                  <div className="h-[30vh] min-h-[220px] lg:h-[72vh]">
+                  <div
+                    className={`min-h-[200px] ${isMobile ? "h-[22vh]" : "h-[30vh]"} lg:h-[72vh]`}
+                    style={{ opacity: 1 - chapterEmptiness * 0.55 }}
+                  >
                     <ChapterScene chapter={chapter} index={index} />
                   </div>
                   <div className="mt-4 hidden text-xs uppercase tracking-[0.2em] text-white/45 lg:block">
@@ -721,8 +993,16 @@ function App() {
                     </h2>
                   </div>
 
-                  <div className="mt-6 h-px w-full max-w-3xl bg-gradient-to-r from-white/20 via-white/5 to-transparent" />
-                  <div className="mt-8 max-w-4xl space-y-3 sm:space-y-3.5">
+                  <div
+                    className="mt-6 h-px w-full max-w-3xl bg-gradient-to-r from-white/20 via-white/5 to-transparent"
+                    style={{ opacity: 1 - chapterEmptiness * 0.85 }}
+                  />
+                  <div
+                    className="mt-8 grid max-w-6xl"
+                    style={{
+                      rowGap: `${1 + chapterEmptiness * 1.8}rem`,
+                    }}
+                  >
                     {chapter.segments.map((segment) => (
                       <SegmentParagraph key={segment.id} segment={segment} />
                     ))}
@@ -734,8 +1014,9 @@ function App() {
         })}
       </main>
 
-      <footer className="relative z-10 px-4 pb-20 pt-8 text-center sm:px-8 lg:px-12">
-        <h2 className="mx-auto max-w-4xl font-display text-3xl leading-tight text-white sm:text-4xl">
+      <footer className="relative z-10 px-4 pb-28 pt-20 text-center sm:px-8 lg:px-12">
+        <div className="mx-auto mb-16 h-px w-full max-w-sm bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+        <h2 className="mx-auto max-w-4xl font-display text-3xl leading-tight text-white/90 sm:text-4xl">
           A imortalidade ainda parece um presente?
         </h2>
       </footer>

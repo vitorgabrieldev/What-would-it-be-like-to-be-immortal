@@ -9,7 +9,7 @@
       "videoId": "GgZCN4VJQ-M",
       "originalTextFile": "YTDown.com YouTube Como-seria-ser-IMORTAL Media GgZCN4VJQ-M 001 1080p.txt"
     },
-    "generatedAt": "2026-02-26T18:58:01.124Z",
+    "generatedAt": "2026-02-26T19:44:11.137Z",
     "notes": [
       "JSON organizado a partir da transcrição com timestamps.",
       "Trecho de patrocínio do vídeo original removido (segmentos 12-14)."
@@ -21,7 +21,7 @@
     "totalChapters": 11,
     "storyChapters": 11,
     "durationSec": 1087,
-    "wordCountStory": 3649
+    "wordCountStory": 3592
   },
   "chapters": [
     {
@@ -83,7 +83,7 @@
       "endSec": 126,
       "durationSec": 54,
       "segmentCount": 5,
-      "wordCount": 204,
+      "wordCount": 160,
       "segmentIds": [
         "seg-007-112-121",
         "seg-008-122-132",
@@ -116,7 +116,7 @@
       "endSec": 311,
       "durationSec": 142,
       "segmentCount": 11,
-      "wordCount": 481,
+      "wordCount": 468,
       "segmentIds": [
         "seg-012-249-259",
         "seg-013-259-319",
@@ -568,7 +568,7 @@
       "end": "2:06",
       "startSec": 111,
       "endSec": 126,
-      "text": "Você forma sua vida no seu próprio tempo, e isso é uma das coisas mais valiosas que a imortalidade te deu. E falando em formar a sua vida, o vestibular 2023 da FIAP já está chegando, com as inscrições acontecendo até o dia 27 de julho. A FIAP e a Lura são parceiras, e a Lura vocês já conhecem há muito tempo aqui no canal.",
+      "text": "Você forma sua vida no seu próprio tempo, e isso é uma das coisas mais valiosas que a imortalidade te deu.",
       "chapterId": "primeiros-anos",
       "type": "story"
     },
@@ -580,7 +580,7 @@
       "end": "2:59",
       "startSec": 169,
       "endSec": 179,
-      "text": "Mas agora de volta ao que vai acontecer com você imortal. 50 anos. Eventualmente os seus amigos e familiares começam a envelhecer, mas isso é algo natural que muitas pessoas passam na vida.",
+      "text": "Eventualmente os seus amigos e familiares começam a envelhecer, mas isso é algo natural que muitas pessoas passam na vida.",
       "chapterId": "cinquenta-anos",
       "type": "story"
     },
@@ -892,7 +892,7 @@
       "end": "8:43",
       "startSec": 511,
       "endSec": 523,
-      "text": "Um milhão de anos. Um super vulcão entra em erupção na Terra, fazendo com que letritos atinjam a atmosfera, bloqueando parte da luz solar, representando o fim de animais e algumas plantas. É impossível para você voltar para a Terra agora.",
+      "text": "Um milhão de anos. Um super vulcão entra em erupção na Terra, fazendo com que detritos atinjam a atmosfera, bloqueando parte da luz solar, representando o fim de animais e algumas plantas. É impossível para você voltar para a Terra agora.",
       "chapterId": "terra-extrema",
       "type": "story"
     },
@@ -1396,7 +1396,7 @@
       "end": "16:14",
       "startSec": 968,
       "endSec": 974,
-      "text": "Um Google de anos. Agora só existe você e buracos negros. Você está preso na era dos buracos negros e não existe mais nada pra ver.",
+      "text": "Um googol de anos. Agora só existe você e buracos negros. Você está preso na era dos buracos negros e não existe mais nada pra ver.",
       "chapterId": "era-buracos-negros",
       "type": "story"
     },
@@ -1492,7 +1492,7 @@
       "end": "17:26",
       "startSec": 1038,
       "endSec": 1046,
-      "text": "Tudo chegou no fim. Nesse ponto você se pergunta se valor apenas é imortal. Você pode até ter sido o único ser humano a testemunhar tudo que era possível de testemunhar.",
+      "text": "Tudo chegou no fim. Nesse ponto você se pergunta se vale apenas ser imortal. Você pode até ter sido o único ser humano a testemunhar tudo que era possível de testemunhar.",
       "chapterId": "epilogo",
       "type": "story"
     },
